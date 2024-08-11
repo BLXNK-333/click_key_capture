@@ -1,0 +1,10 @@
+__pycache__/
+.venv/
+.idea/
+sounds/
+macros/
+pyrightconfig.json
+.flake8
+.env
+temp_in.py
+test.py
