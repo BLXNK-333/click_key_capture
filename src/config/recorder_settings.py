@@ -9,8 +9,7 @@ recorder_settings = {
     },
     "hot_keys": {
         # Управление
-        "start_record": "<ctrl>+<space>",
-        "stop_record": "<ctrl>+<space>",
+        "toggle_recording": "<ctrl>+<space>",
         "exit_the_program": "<ctrl>+c",
     },
     "settings": {

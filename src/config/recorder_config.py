@@ -12,8 +12,7 @@ class Paths:
 
 @dataclass
 class HotKeys:
-    start_record: str
-    stop_record: str
+    toggle_recording: str
     exit_the_program: str
 
 
@@ -40,8 +39,7 @@ def load_config():
             macros_directory=recorder_settings["paths"]["macros_directory"]
         ),
         hot_keys=HotKeys(
-            start_record=recorder_settings["hot_keys"]["start_record"],
-            stop_record=recorder_settings["hot_keys"]["stop_record"],
+            toggle_recording=recorder_settings["hot_keys"]["toggle_recording"],
             exit_the_program=recorder_settings["hot_keys"]["exit_the_program"]
         ),
         settings=Settings(
