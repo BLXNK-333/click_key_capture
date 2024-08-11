@@ -1,4 +1,6 @@
 import subprocess
+import threading
+
 from .config.recorder_config import Config
 
 
@@ -12,8 +14,17 @@ class Sounds:
         self._stop_sound = config.paths.stop_sound
         self._exit_sound = config.paths.exit_sound
 
-    def _playsound(self, filepath: str):
-        return subprocess.Popen(['ffplay', '-nodisp', '-autoexit', filepath])
+    def _playsound(self, filepath: str) -> threading.Thread:
+        def run_sound():
+            subprocess.run(
+                ['ffplay', '-nodisp', '-autoexit', filepath],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL
+            )
+
+        sound_thread = threading.Thread(target=run_sound)
+        sound_thread.start()
+        return sound_thread
 
     def play_start_sound(self):
         self._playsound(self._start_sound)
@@ -22,5 +33,4 @@ class Sounds:
         self._playsound(self._stop_sound)
 
     def play_exit_sound(self):
-        process = self._playsound(self._exit_sound)
-        process.wait()
+        self._playsound(self._exit_sound)
