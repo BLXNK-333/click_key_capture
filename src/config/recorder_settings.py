@@ -1,20 +1,29 @@
 recorder_settings = {
-    # Пути к звукам
-    "path_to_start_sound": "./sounds/Ceres-start.ogg",
-    "path_to_stop_sound": "./sounds/Ceres-stop.ogg",
-    "path_to_exit_sound": "./sounds/Salacia-quit.ogg",
-
-    # Пути к директории с макросами
-    "path_to_macros_directory": "./macros",
-
-    # Управление
-    "hot_key_start_record": "<ctrl>+<space>",
-    "hot_key_stop_record": "<ctrl>+<space>",
-    "hot_key_exit_the_program": "<ctrl>+c",
-
-    # Обрезает начало записи движений мыши, где мышь не двигалась.
-    "set_trim_idle": True,
-
-    # Объединяет время, простоя мыши или клавиш в одно событие.
-    "set_stack_time": True
+    "paths": {
+        # Пути к звукам
+        "start_sound": "./sounds/Ceres-start.ogg",
+        "stop_sound": "./sounds/Ceres-stop.ogg",
+        "exit_sound": "./sounds/Salacia-quit.ogg",
+        # Пути к директории с макросами
+        "macros_directory": "./macros",
+    },
+    "hot_keys": {
+        # Управление
+        "start_record": "<ctrl>+<space>",
+        "stop_record": "<ctrl>+<space>",
+        "exit_the_program": "<ctrl>+c",
+    },
+    "settings": {
+        # Обрезает начало записи движений мыши, где мышь не двигалась.
+        "trim_idle": True,
+        # Объединяет время, простоя мыши или клавиш в одно событие.
+        "stack_time": True,
+        # Этот параметр указывает, что события с устройств ввода (например,
+        # клавиатуры и мыши) могут записываться с интервалом от 0.01 секунды,
+        # что позволяет записывать до 100 событий в секунду. Минимальный интервал
+        # записи, который имеет смысл устанавливать, составляет около 0.007 - 0.008
+        # секунды. Если установить значение меньше, то оно будет ограничено
+        # и все равно запишет события с этим минимальным интервалом.
+        "duration": 0.01
+    }
 }

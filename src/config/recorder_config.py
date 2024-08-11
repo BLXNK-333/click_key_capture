@@ -3,23 +3,50 @@ from recorder_settings import recorder_settings
 
 
 @dataclass
+class Paths:
+    start_sound: str
+    stop_sound: str
+    exit_sound: str
+    macros_directory: str
+
+
+@dataclass
+class HotKeys:
+    start_record: str
+    stop_record: str
+    exit_the_program: str
+
+
+@dataclass
+class Settings:
+    trim_idle: bool
+    stack_time: bool
+    duration: float
+
+
+@dataclass
 class Config:
-    path_to_start_sound: str
-    path_to_stop_sound: str
-    path_to_exit_sound: str
-    path_to_macros_directory: str
-    hot_key_start_record: str
-    hot_key_stop_record: str
-    hot_key_exit_the_program: str
+    paths: Paths
+    hot_keys: HotKeys
+    settings: Settings
 
 
 def load_config():
     return Config(
-        path_to_start_sound=recorder_settings["path_to_start_sound"],
-        path_to_stop_sound=recorder_settings["path_to_stop_sound"],
-        path_to_exit_sound=recorder_settings["path_to_exit_sound"],
-        path_to_macros_directory=recorder_settings["path_to_macros_directory"],
-        hot_key_start_record=recorder_settings["hot_key_start_record"],
-        hot_key_stop_record=recorder_settings["hot_key_stop_record"],
-        hot_key_exit_the_program=recorder_settings["hot_key_exit_the_program"]
+        paths=Paths(
+            start_sound=recorder_settings["paths"]["start_sound"],
+            stop_sound=recorder_settings["paths"]["stop_sound"],
+            exit_sound=recorder_settings["paths"]["exit_sound"],
+            macros_directory=recorder_settings["paths"]["macros_directory"]
+        ),
+        hot_keys=HotKeys(
+            start_record=recorder_settings["hot_keys"]["start_record"],
+            stop_record=recorder_settings["hot_keys"]["stop_record"],
+            exit_the_program=recorder_settings["hot_keys"]["exit_the_program"]
+        ),
+        settings=Settings(
+            trim_idle=recorder_settings["settings"]["trim_idle"],
+            stack_time=recorder_settings["settings"]["stack_time"],
+            duration=recorder_settings["settings"]["duration"]
+        )
     )
