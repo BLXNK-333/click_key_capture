@@ -1,3 +1,4 @@
+import pprint
 import threading
 import time
 from logging import getLogger
@@ -43,6 +44,9 @@ class HotKeysHandler:
                 self._recording_thread.join()
             self._logger.info("Recording from input devices has stopped.")
             self._sounds.play_stop_sound()
+            #
+            # x = self._event_handler.get_last_macro()
+            # pprint.pprint(x)
             self._recording = False
 
     def _on_toggle_recording(self):
