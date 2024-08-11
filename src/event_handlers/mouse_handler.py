@@ -2,7 +2,7 @@ from typing import List
 import time
 
 from pynput import mouse
-from events import MouseEvent
+from .events import MouseEvent
 
 
 class MouseEventHandler:
@@ -10,11 +10,6 @@ class MouseEventHandler:
         self._event_list: List[MouseEvent] = []
         self._duration = duration
         self._recording = True
-        self._mouse_listener = mouse.Listener(
-            on_move=self._on_move,
-            on_click=self._on_click,
-            on_scroll=self._on_scroll
-        )
 
     def _on_move(self, x, y):
         current_time = time.time()
@@ -31,14 +26,18 @@ class MouseEventHandler:
         self._event_list.append(("scroll", x, y, dx, dy, current_time))
 
     def start(self):
+        _mouse_listener = mouse.Listener(
+            on_move=self._on_move,
+            on_click=self._on_click,
+            on_scroll=self._on_scroll
+        )
         self._event_list = []
-        self._mouse_listener.start()
+        _mouse_listener.start()
         while self._recording:
             time.sleep(self._duration)
 
     def stop(self):
         self._recording = False
-        self._mouse_listener.stop()
 
     @property
     def events_list(self):

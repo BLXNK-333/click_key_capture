@@ -2,21 +2,22 @@ from typing import Optional
 from datetime import datetime
 import threading
 
-from keyboard_handler import KeyboardEventHandler
-from mouse_handler import MouseEventHandler
+from .keyboard_handler import KeyboardEventHandler
+from .mouse_handler import MouseEventHandler
 
 
 class EventHandler:
     def __init__(
-        self,
-        duration: float = 0.01,
-        mouse_record: bool = True,
-        keyboard_record: bool = True
+            self,
+            duration: float = 0.01,
+            mouse_record: bool = True,
+            keyboard_record: bool = True
     ):
         self._macros = {}
         self._filename: str = ""
         self._mouse_handler = MouseEventHandler(duration) if mouse_record else None
-        self._keyboard_handler = KeyboardEventHandler(duration) if keyboard_record else None
+        self._keyboard_handler = KeyboardEventHandler(
+            duration) if keyboard_record else None
         self._mouse_thread: Optional[threading.Thread] = None
         self._keyboard_thread: Optional[threading.Thread] = None
 
