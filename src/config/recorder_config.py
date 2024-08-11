@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from recorder_settings import recorder_settings
+from .recorder_settings import recorder_settings
 
 
 @dataclass

@@ -1,5 +1,5 @@
 import subprocess
-from config.recorder_config import Config
+from .config.recorder_config import Config
 
 
 class Sounds:
@@ -13,7 +13,7 @@ class Sounds:
         self._exit_sound = config.paths.exit_sound
 
     def _playsound(self, filepath: str):
-        subprocess.Popen(['ffplay', '-nodisp', '-autoexit', filepath])
+        return subprocess.Popen(['ffplay', '-nodisp', '-autoexit', filepath])
 
     def play_start_sound(self):
         self._playsound(self._start_sound)
@@ -22,4 +22,5 @@ class Sounds:
         self._playsound(self._stop_sound)
 
     def play_exit_sound(self):
-        self._playsound(self._exit_sound)
+        process = self._playsound(self._exit_sound)
+        process.wait()
