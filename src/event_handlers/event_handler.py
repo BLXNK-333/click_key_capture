@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Tuple, List, Dict
 from datetime import datetime
 import threading
 
@@ -48,28 +48,9 @@ class EventHandler:
             "keyboard_events": self._keyboard_handler.events_list
         }
 
-    def get_last_macro(self):
-        return self._macros[self._filename]
-
-
-if __name__ == '__main__':
-    # Пример использования класса EventHandler
-    handler = EventHandler(mouse_record=True, keyboard_record=True)
-    handler.start()
-
-    try:
-        while True:
-            pass
-    except KeyboardInterrupt:
-        handler.stop()
-
-    events = handler.get_last_macro()
-
-    # Теперь можно посмотреть, какие события были записаны
-    print("Записанные события мыши:")
-    for event in events["mouse_events"]:
-        print(event)
-
-    print("Записанные события клавиатуры:")
-    for event in events["keyboard_events"]:
-        print(event)
+    def get_last_macro(self) -> Tuple[str, Dict[str, List]]:
+        """
+        Функция возвращает последний записанный макрос, в виде кортежа:
+        ("Начало_времени_записи": {"mouse_events": [...], "keyboard_events": [...]})
+        """
+        return self._filename, self._macros[self._filename]
