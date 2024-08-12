@@ -4,6 +4,7 @@ import threading
 
 from .keyboard_handler import KeyboardEventHandler
 from .mouse_handler import MouseEventHandler
+from .events import Macro
 
 
 class EventHandler:
@@ -14,7 +15,7 @@ class EventHandler:
             keyboard_record: bool = True
     ):
         self._macros = {}
-        self._filename: str = ""
+        self._current_marco_name: str = ""
         self._mouse_handler = MouseEventHandler(duration) if mouse_record else None
         self._keyboard_handler = KeyboardEventHandler(
             duration) if keyboard_record else None
@@ -22,7 +23,7 @@ class EventHandler:
         self._keyboard_thread: Optional[threading.Thread] = None
 
     def start(self):
-        self._filename = datetime.now().strftime("%Y-%m-%d_%H-%M-%S_%f")[:-3]
+        self._current_marco_name = datetime.now().strftime("%Y-%m-%d_%H-%M-%S_%f")[:-3]
 
         # Пересоздаем только потоки для обработчиков
         if self._mouse_handler:
@@ -43,14 +44,14 @@ class EventHandler:
             self._keyboard_handler.stop()
             self._keyboard_thread.join()
 
-        self._macros[self._filename] = {
-            "mouse_events": self._mouse_handler.events_list,
-            "keyboard_events": self._keyboard_handler.events_list
-        }
+        self._macros[self._current_marco_name] = Macro(
+            filename=self._current_marco_name,
+            mouse_events=self._mouse_handler.events_list,
+            keyboard_evens=self._keyboard_handler.events_list
+        )
 
-    def get_last_macro(self) -> Tuple[str, Dict[str, List]]:
+    def get_last_macro(self) -> Macro:
         """
-        Функция возвращает последний записанный макрос, в виде кортежа:
-        ("Начало_времени_записи": {"mouse_events": [...], "keyboard_events": [...]})
+        Функция возвращает последний записанный макрос, в виде объекта Macro.
         """
-        return self._filename, self._macros[self._filename]
+        return self._macros[self._current_marco_name]

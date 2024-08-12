@@ -1,4 +1,5 @@
-from typing import Tuple, Union
+from typing import Tuple, Union, List
+from dataclasses import dataclass
 
 MouseEvent = Union[
     Tuple[str, int, int, float],
@@ -7,3 +8,10 @@ MouseEvent = Union[
 ]
 
 KeyboardEvent = Tuple[str, str, float]
+
+
+@dataclass
+class Macro:
+    filename: str
+    mouse_events: List[MouseEvent]
+    keyboard_evens: List[KeyboardEvent]

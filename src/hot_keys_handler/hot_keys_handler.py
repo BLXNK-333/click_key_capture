@@ -46,7 +46,9 @@ class HotKeysHandler:
             self._sounds.play_stop_sound()
             #
             # x = self._event_handler.get_last_macro()
-            # pprint.pprint(x)
+            # pprint.pprint(x.filename)
+            # pprint.pprint(x.mouse_events)
+            # pprint.pprint(x.keyboard_evens)
             self._recording = False
 
     def _on_toggle_recording(self):
