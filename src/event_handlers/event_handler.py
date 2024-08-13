@@ -1,57 +1,75 @@
-from typing import Optional, Tuple, List, Dict
 from datetime import datetime
-import threading
+import time
+from pynput import mouse, keyboard
 
-from .keyboard_handler import KeyboardEventHandler
-from .mouse_handler import MouseEventHandler
 from .events import Macro
+from ..config.recorder_config import Config
 
 
 class EventHandler:
-    def __init__(
-            self,
-            duration: float = 0.01,
-            mouse_record: bool = True,
-            keyboard_record: bool = True
-    ):
-        self._macros = {}
+    def __init__(self, config: Config):
+        self._event_list = []
         self._current_marco_name: str = ""
-        self._mouse_handler = MouseEventHandler(duration) if mouse_record else None
-        self._keyboard_handler = KeyboardEventHandler(
-            duration) if keyboard_record else None
-        self._mouse_thread: Optional[threading.Thread] = None
-        self._keyboard_thread: Optional[threading.Thread] = None
+        self._duration = config.settings.duration
+        self._mouse_record = config.settings.mouse_record
+        self._keyboard_record = config.settings.keyboard_record
+
+        self._mouse_listener = None
+        self._keyboard_listener = None
+
+    def _on_move(self, x, y):
+        current_time = time.time()
+        self._event_list.append(("mouse", "move", x, y, current_time))
+
+    def _on_click(self, x, y, button, pressed):
+        action = "click_down" if pressed else "click_up"
+        button_type = str(button).split('.')[-1]
+        current_time = time.time()
+        self._event_list.append(("mouse", action, x, y, button_type, current_time))
+
+    def _on_scroll(self, x, y, dx, dy):
+        current_time = time.time()
+        self._event_list.append(("mouse", "scroll", x, y, dx, dy, current_time))
+
+    def _on_key_press(self, key):
+        current_time = time.time()
+        self._event_list.append(("keyboard", "key_press", str(key), current_time))
+
+    def _on_key_release(self, key):
+        current_time = time.time()
+        self._event_list.append(("keyboard", "key_release", str(key), current_time))
 
     def start(self):
+        self._event_list = []
         self._current_marco_name = datetime.now().strftime("%Y-%m-%d_%H-%M-%S_%f")[:-3]
 
-        # Пересоздаем только потоки для обработчиков
-        if self._mouse_handler:
-            self._mouse_thread = threading.Thread(target=self._mouse_handler.start)
-            self._mouse_thread.start()
+        if self._mouse_record:
+            self._mouse_listener = mouse.Listener(
+                on_move=self._on_move,
+                on_click=self._on_click,
+                on_scroll=self._on_scroll
+            )
+            self._mouse_listener.start()
 
-        if self._keyboard_handler:
-            self._keyboard_thread = threading.Thread(target=self._keyboard_handler.start)
-            self._keyboard_thread.start()
+        if self._keyboard_record:
+            self._keyboard_listener = keyboard.Listener(
+                on_press=self._on_key_press,
+                on_release=self._on_key_release
+            )
+            self._keyboard_listener.start()
 
     def stop(self):
-        # Останавливаем обработчики
-        if self._mouse_handler:
-            self._mouse_handler.stop()
-            self._mouse_thread.join()
+        if self._mouse_listener:
+            self._mouse_listener.stop()
 
-        if self._keyboard_handler:
-            self._keyboard_handler.stop()
-            self._keyboard_thread.join()
-
-        self._macros[self._current_marco_name] = Macro(
-            filename=self._current_marco_name,
-            mouse_events=self._mouse_handler.events_list,
-            keyboard_evens=self._keyboard_handler.events_list
-        )
+        if self._keyboard_listener:
+            self._keyboard_listener.stop()
 
     def get_last_macro(self) -> Macro:
         """
         Функция возвращает последний записанный макрос, в виде объекта Macro.
         """
-        return self._macros[self._current_marco_name]
+        return Macro(
+            filename=self._current_marco_name,
+            event_list=self._event_list
+        )
