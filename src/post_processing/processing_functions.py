@@ -43,12 +43,14 @@ def _remove_unpaired_up_events(events: List[AnyEvent]):
                 pressed.remove(button)
         else:
             button = event[3]
+            _key = "click" + button
             if _type == "click_down":
-                pressed.add(button)
+                cleaned_events.append(event)
+                pressed.add(_key)
             else:
-                if button in pressed:
+                if _key in pressed:
                     cleaned_events.append(event)
-                    pressed.remove(button)
+                    pressed.remove(_key)
 
     return cleaned_events
 
@@ -74,12 +76,14 @@ def _remove_unpaired_down_events(events: List[AnyEvent]):
                 unpressed.remove(button)
         else:
             button = events[i][3]
+            _key = "click" + button
             if _type == "click_up":
-                unpressed.add(button)
+                cleaned_events.append(events[i])
+                unpressed.add(_key)
             else:
-                if button in unpressed:
+                if _key in unpressed:
                     cleaned_events.append(events[i])
-                    unpressed.remove(button)
+                    unpressed.remove(_key)
 
     cleaned_events.reverse()
     return cleaned_events
@@ -142,26 +146,36 @@ def post_process_input_events(events: List[AnyEvent]) -> List[AnyEvent]:
     :return: (List[KeyboardEvent]) Обработанный макрос.
     """
 
-    return _cleanup_unpaired_events(
-        _stack_time_keyboard(convert_time_to_delays(events))
-    )
+    # return _cleanup_unpaired_events(
+    #     _stack_time_keyboard(convert_time_to_delays(events))
+    # )
+    return convert_time_to_delays(events)
 
 
 if __name__ == '__main__':
-    _events_ = [('key_release', 'Key.ctrl', 1723564444.5224304),
-                ('key_release', 'Key.space', 1723564444.5229015),
-                ('key_press', "'z'", 1723564446.9984815),
-                ('key_press', "'a'", 1723564447.10984),
-                ('key_release', "'z'", 1723564447.136293),
-                ('key_release', "'a'", 1723564447.2326026),
-                ('key_press', "'l'", 1723564447.3530116),
-                ('key_release', "'l'", 1723564447.4889426),
-                ('key_press', "'u'", 1723564448.6351593),
-                ('key_release', "'u'", 1723564448.7363021),
-                ('key_press', "'p'", 1723564449.0572848),
-                ('key_release', "'p'", 1723564449.1579237),
-                ('key_press', "'a'", 1723564449.2428613),
-                ('key_release', "'a'", 1723564449.343996),
-                ('key_press', 'Key.ctrl', 1723564450.602112)]
+    # _events_ = [('key_release', 'Key.ctrl', 1723564444.5224304),
+    #             ('key_release', 'Key.space', 1723564444.5229015),
+    #             ('key_press', "'z'", 1723564446.9984815),
+    #             ('key_press', "'a'", 1723564447.10984),
+    #             ('key_release', "'z'", 1723564447.136293),
+    #             ('key_release', "'a'", 1723564447.2326026),
+    #             ('key_press', "'l'", 1723564447.3530116),
+    #             ('key_release', "'l'", 1723564447.4889426),
+    #             ('key_press', "'u'", 1723564448.6351593),
+    #             ('key_release', "'u'", 1723564448.7363021),
+    #             ('key_press', "'p'", 1723564449.0572848),
+    #             ('key_release', "'p'", 1723564449.1579237),
+    #             ('key_press', "'a'", 1723564449.2428613),
+    #             ('key_release', "'a'", 1723564449.343996),
+    #             ('key_press', 'Key.ctrl', 1723564450.602112)]
+    #
+    # pprint.pprint(post_process_input_events(_events_))
 
-    pprint.pprint(post_process_input_events(_events_))
+    from src.file_io.file_io import read_macro
+
+    filename = "2024-08-14_02-47-53_238"
+    macro_path = f"/home/blxnk/PycharmProjects/click_key_capture/macros/{filename}.txt"
+    macro = read_macro(macro_path)
+
+    macro = _cleanup_unpaired_events(macro)
+    pprint.pprint(macro)
