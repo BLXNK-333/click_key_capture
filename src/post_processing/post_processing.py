@@ -25,11 +25,12 @@ class PostProcessing:
         конфигурации.
         """
         _post_event_list = post_process_input_events(macro.event_list)
-        write_macro(
-            filename=macro.filename,
-            data=_post_event_list,
-            path=self._macros_directory
-        )
+        if _post_event_list:
+            write_macro(
+                filename=macro.filename,
+                data=_post_event_list,
+                path=self._macros_directory
+            )
 
     def __process_tasks(self):
         """Процесс, который обрабатывает задачи из очереди."""
