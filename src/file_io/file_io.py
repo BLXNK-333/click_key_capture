@@ -37,7 +37,7 @@ def read_macro(file_path: str):
             elif action == "scroll":
                 x, y, dx, dy = map(int, data[:4])
                 delay = float(data[4])
-                result.append((x, y, dx, dy, delay))
+                result.append((action, x, y, dx, dy, delay))
 
             else:
                 # Предполагается, что сюда попадут оставшиеся
