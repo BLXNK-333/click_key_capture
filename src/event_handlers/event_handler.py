@@ -1,6 +1,7 @@
 from datetime import datetime
 import time
 from pynput import mouse, keyboard
+from pynput.keyboard import Key
 
 from .events import Macro
 from ..config.recorder_config import Config
@@ -31,13 +32,16 @@ class EventHandler:
         current_time = time.time()
         self._event_list.append(("scroll", x, y, dx, dy, current_time))
 
-    def _on_key_press(self, key):
+    def _on_key(self, key, event_type: str):
         current_time = time.time()
-        self._event_list.append(("key_press", str(key), current_time))
+        key_str = str(key) if not isinstance(key, Key) else key.name
+        self._event_list.append((event_type, key_str, current_time))
+
+    def _on_key_press(self, key):
+        self._on_key(key, "key_press")
 
     def _on_key_release(self, key):
-        current_time = time.time()
-        self._event_list.append(("key_release", str(key), current_time))
+        self._on_key(key, "key_release")
 
     def start(self):
         self._event_list = []
