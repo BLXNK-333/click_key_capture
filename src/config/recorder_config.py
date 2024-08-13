@@ -18,9 +18,10 @@ class HotKeys:
 
 @dataclass
 class Settings:
-    trim_idle: bool
-    stack_time: bool
     duration: float
+    mouse_record: True
+    keyboard_record: True
+    delay_before_playback: int
 
 
 @dataclass
@@ -43,8 +44,9 @@ def load_config():
             exit_the_program=recorder_settings["hot_keys"]["exit_the_program"]
         ),
         settings=Settings(
-            trim_idle=recorder_settings["settings"]["trim_idle"],
-            stack_time=recorder_settings["settings"]["stack_time"],
-            duration=recorder_settings["settings"]["duration"]
+            mouse_record=recorder_settings["settings"]["mouse_record"],
+            keyboard_record=recorder_settings["settings"]["keyboard_record"],
+            duration=recorder_settings["settings"]["duration"],
+            delay_before_playback=recorder_settings["settings"]["delay_before_playback"]
         )
     )
