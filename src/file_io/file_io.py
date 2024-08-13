@@ -26,23 +26,23 @@ def read_macro(file_path: str):
             action, *data = line
 
             if action == "move":
-                x, y, duration = data
-                result.append((action, int(x), int(y), float(duration)))
+                x, y, delay = data
+                result.append((action, int(x), int(y), float(delay)))
 
             elif action in {"click_down", "click_up"}:
-                x, y, button, duration = data
+                x, y, button, delay = data
                 result.append(
-                    (action, int(x), int(y), button, float(duration)))
+                    (action, int(x), int(y), button, float(delay)))
 
             elif action == "scroll":
                 x, y, dx, dy = map(int, data[:4])
-                duration = float(data[4])
-                result.append((x, y, dx, dy, duration))
+                delay = float(data[4])
+                result.append((x, y, dx, dy, delay))
 
             else:
                 # Предполагается, что сюда попадут оставшиеся
                 # {"key_press", "key_release"}
-                button, duration = data
-                result.append((action, button, float(duration)))
+                button, delay = data
+                result.append((action, button, float(delay)))
 
     return result

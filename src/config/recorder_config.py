@@ -18,7 +18,7 @@ class HotKeys:
 
 @dataclass
 class Settings:
-    duration: float
+    delay: float
     mouse_record: True
     keyboard_record: True
     delay_before_playback: int
@@ -46,7 +46,7 @@ def load_config():
         settings=Settings(
             mouse_record=recorder_settings["settings"]["mouse_record"],
             keyboard_record=recorder_settings["settings"]["keyboard_record"],
-            duration=recorder_settings["settings"]["duration"],
+            delay=recorder_settings["settings"]["delay"],
             delay_before_playback=recorder_settings["settings"]["delay_before_playback"]
         )
     )

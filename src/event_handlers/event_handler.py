@@ -10,7 +10,7 @@ class EventHandler:
     def __init__(self, config: Config):
         self._event_list = []
         self._current_marco_name: str = ""
-        self._duration = config.settings.duration
+        self._delay = config.settings.delay
         self._mouse_record = config.settings.mouse_record
         self._keyboard_record = config.settings.keyboard_record
 
