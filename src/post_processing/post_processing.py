@@ -2,7 +2,7 @@ import multiprocessing
 
 from ..config.recorder_config import Config
 from ..event_handlers.events import Macro
-from ..file_io import write_macro
+from ..file_io.file_io import write_macro
 from .processing_functions import post_process_input_events
 
 

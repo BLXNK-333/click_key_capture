@@ -1,7 +1,7 @@
 import subprocess
 import threading
 
-from .config.recorder_config import Config
+from src.config.recorder_config import Config
 
 
 class Sounds:

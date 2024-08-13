@@ -1,7 +1,7 @@
 import os.path
 from typing import List, Union
 
-from .event_handlers.events import MouseEvent, KeyboardEvent
+from src.event_handlers.events import MouseEvent, KeyboardEvent
 
 
 def write_macro(
