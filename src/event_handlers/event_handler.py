@@ -19,25 +19,25 @@ class EventHandler:
 
     def _on_move(self, x, y):
         current_time = time.time()
-        self._event_list.append(("mouse", "move", x, y, current_time))
+        self._event_list.append(("move", x, y, current_time))
 
     def _on_click(self, x, y, button, pressed):
         action = "click_down" if pressed else "click_up"
         button_type = str(button).split('.')[-1]
         current_time = time.time()
-        self._event_list.append(("mouse", action, x, y, button_type, current_time))
+        self._event_list.append((action, x, y, button_type, current_time))
 
     def _on_scroll(self, x, y, dx, dy):
         current_time = time.time()
-        self._event_list.append(("mouse", "scroll", x, y, dx, dy, current_time))
+        self._event_list.append(("scroll", x, y, dx, dy, current_time))
 
     def _on_key_press(self, key):
         current_time = time.time()
-        self._event_list.append(("keyboard", "key_press", str(key), current_time))
+        self._event_list.append(("key_press", str(key), current_time))
 
     def _on_key_release(self, key):
         current_time = time.time()
-        self._event_list.append(("keyboard", "key_release", str(key), current_time))
+        self._event_list.append(("key_release", str(key), current_time))
 
     def start(self):
         self._event_list = []

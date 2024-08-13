@@ -2,12 +2,12 @@ from typing import Tuple, Union, List
 from dataclasses import dataclass
 
 MouseEvent = Union[
-    Tuple[str, str, int, int, float],
-    Tuple[str, str, int, int, str, float],
-    Tuple[str, str, int, int, int, int, float]
+    Tuple[str, int, int, float],
+    Tuple[str, int, int, str, float],
+    Tuple[str, int, int, int, int, float]
 ]
 
-KeyboardEvent = Tuple[str, str, str, float]
+KeyboardEvent = Tuple[str, str, float]
 
 AnyEvent = Union[KeyboardEvent, MouseEvent]
 
