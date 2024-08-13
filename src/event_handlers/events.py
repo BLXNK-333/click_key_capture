@@ -9,6 +9,8 @@ MouseEvent = Union[
 
 KeyboardEvent = Tuple[str, str, str, float]
 
+AnyEvent = Union[KeyboardEvent, MouseEvent]
+
 
 @dataclass
 class Macro:
