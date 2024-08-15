@@ -26,7 +26,7 @@ recorder_settings = {
         # и все равно запишет события с этим минимальным интервалом.
         "delay": 0.01,
         # Записывать события мыши, клавиатуры.
-        "mouse_record": False,
+        "mouse_record": True,
         "keyboard_record": True,
         # Задержка перед, воспроизведением макроса, в секундах.
         "delay_before_playback": 3

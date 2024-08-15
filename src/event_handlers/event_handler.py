@@ -39,7 +39,7 @@ class EventHandler:
     def __on_key(self, key, event_type: str) -> None:
         current_time = time.time()
         if isinstance(key, Key):
-            key_str = key.name
+            key_str = key
             if key == Key.shift:
                 self._states.shift_pressed = not self._states.shift_pressed
             elif key == Key.caps_lock and event_type.endswith("s"):
@@ -88,12 +88,13 @@ class EventHandler:
 
     def stop(self):
         if self._mouse_listener:
-            time.sleep(0.15)
+            # time.sleep(0.15)
             self._mouse_listener.stop()
 
         if self._keyboard_listener:
-            time.sleep(0.15)
+            # time.sleep(0.15)
             self._keyboard_listener.stop()
+        time.sleep(0.15)
 
     def get_last_macro(self) -> Macro:
         """
