@@ -8,9 +8,14 @@ recorder_settings = {
         "macros_directory": "./macros",
     },
     "hot_keys": {
-        # Управление
+        # Включает / останавливает запись макроса.
         "toggle_recording": "<ctrl>+<space>",
+        # Выход из программы
         "exit_the_program": "<ctrl>+c",
+        # Комбинация для переключения языковой раскладки в системе.
+        # Синтаксис и aliases в pynput, отличается от gsettings. Для xorg можно
+        # посмотреть тут pynput.keyboard._xorg.py
+        "switch_layout": "<cmd>+<space>"
     },
     "settings": {
         # Этот параметр указывает, что события с устройств ввода (например,
@@ -21,9 +26,9 @@ recorder_settings = {
         # и все равно запишет события с этим минимальным интервалом.
         "delay": 0.01,
         # Записывать события мыши, клавиатуры.
-        "mouse_record": True,
+        "mouse_record": False,
         "keyboard_record": True,
         # Задержка перед, воспроизведением макроса, в секундах.
-        "delay_before_playback": 3,
+        "delay_before_playback": 3
     }
 }

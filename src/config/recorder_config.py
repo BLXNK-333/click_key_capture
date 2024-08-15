@@ -14,6 +14,7 @@ class Paths:
 class HotKeys:
     toggle_recording: str
     exit_the_program: str
+    switch_layout: str
 
 
 @dataclass
@@ -41,7 +42,8 @@ def load_config():
         ),
         hot_keys=HotKeys(
             toggle_recording=recorder_settings["hot_keys"]["toggle_recording"],
-            exit_the_program=recorder_settings["hot_keys"]["exit_the_program"]
+            exit_the_program=recorder_settings["hot_keys"]["exit_the_program"],
+            switch_layout=recorder_settings["hot_keys"]["switch_layout"]
         ),
         settings=Settings(
             mouse_record=recorder_settings["settings"]["mouse_record"],

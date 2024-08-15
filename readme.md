@@ -1,2 +1,2 @@
-Системные зависсимости:
-sudo dnf install python3-devel ffmpeg
+Системные зависимости:
+sudo dnf install python3-devel ffmpeg xset
