@@ -1,11 +1,13 @@
 from datetime import datetime
 import time
+
 from pynput import mouse, keyboard
 from pynput.keyboard import Key
 
 from .events import Macro
 from ..config.recorder_config import Config
 from ..states.states import States
+from ..states.decode import decode_map
 
 
 class EventHandler:
@@ -15,7 +17,7 @@ class EventHandler:
         self._delay = config.settings.delay
         self._mouse_record = config.settings.mouse_record
         self._keyboard_record = config.settings.keyboard_record
-        self.states = states
+        self._states = states
 
         self._mouse_listener = None
         self._keyboard_listener = None
@@ -39,20 +41,30 @@ class EventHandler:
         if isinstance(key, Key):
             key_str = key.name
             if key == Key.shift:
-                self.states.shift_pressed = not self.states.shift_pressed
+                self._states.shift_pressed = not self._states.shift_pressed
             elif key == Key.caps_lock and event_type.endswith("s"):
-                self.states.caps_pressed = not self.states.caps_pressed
+                self._states.caps_pressed = not self._states.caps_pressed
         else:
-            key_str = str(key)
-            if self.states.shift_pressed or self.states.caps_pressed:
-                key_str = key_str.upper()
-            print(key_str)
+            code = key.vk
+
+            if code in decode_map:
+                cur_lang = self._states.current_lang
+                _case = "lower"
+                if self._states.shift_pressed or self._states.caps_pressed:
+                    _case = "upper"
+                key_str = decode_map[code][cur_lang][_case]
+            else:
+                key_str = str(key)
+            # if event_type == "key_press": # для теста
+            #     print(f"press_key: {key_str}, key.vk: {code}   ", end="")
         self._event_list.append((event_type, key_str, current_time))
 
     def _on_key_press(self, key) -> None:
         self.__on_key(key, "key_press")
 
     def _on_key_release(self, key) -> None:
+        # if not isinstance(key, Key): # для теста
+        #     print()
         self.__on_key(key, "key_release")
 
     def start(self):
