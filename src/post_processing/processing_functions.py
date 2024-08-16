@@ -22,7 +22,7 @@ def convert_time_to_delays(events: List[AnyEvent]):
     return converted
 
 
-def _remove_unpaired_up_events(events: List[AnyEvent]):
+def remove_unpaired_up_events(events: List[AnyEvent]):
     cleaned_events = []
     untracked = {"move", "scroll"}
     pressed = set()
@@ -55,7 +55,7 @@ def _remove_unpaired_up_events(events: List[AnyEvent]):
     return cleaned_events
 
 
-def _remove_unpaired_down_events(events: List[AnyEvent]):
+def remove_unpaired_down_events(events: List[AnyEvent]):
     cleaned_events = []
     untracked = {"move", "scroll"}
     unpressed = set()
@@ -95,8 +95,8 @@ def cleanup_unpaired_events(events: List[AnyEvent]):
     которые не имеют пары. Например, если клавиша была нажата, но не отжата до
     конца макроса, или наоборот.
     """
-    return _remove_unpaired_down_events(
-        _remove_unpaired_up_events(events)
+    return remove_unpaired_down_events(
+        remove_unpaired_up_events(events)
     )
 
 
@@ -117,20 +117,51 @@ def stack_time_keyboard(events: List[AnyEvent]):
     for i in range(len(events)):
         event_type = events[i][0]
         if event_type.startswith("key"):
-            cur_event, cur_key, delay = events[i]
+            cur_event, cur_key, delay = events[i][:3]
             if cur_key == prev_key and cur_event == prev_event:
                 stacked_delay += delay
                 continue
 
-        if event_type.startswith("key"):
             if prev_key:
                 stacked_events.append((prev_event, prev_key, stacked_delay))
-            prev_event, prev_key, stacked_delay = events[i]
+            prev_event, prev_key, stacked_delay = cur_event, cur_key, delay
+
         else:
             if prev_key:
                 stacked_events.append((prev_event, prev_key, stacked_delay))
             stacked_events.append(events[i])
             prev_event, prev_key, stacked_delay = empty_field
+    if stacked_events[-1] == empty_field:
+        stacked_events.pop()
+    return stacked_events
+
+
+def stack_time_mouse(events: List[AnyEvent]):
+    if not events:
+        return []
+
+    stacked_events = []
+    empty_field = ("", 0, 0, 0.0)
+    events.append(empty_field)
+    prev_event, prev_x, prev_y, stacked_delay = empty_field
+
+    for i in range(len(events)):
+        event_type = events[i][0]
+
+        if event_type == "move":
+            cur_event, cur_x, cur_y, delay = events[i][:4]
+            if isinstance(delay, float) and isinstance(stacked_delay, float):
+                if cur_x == prev_x and cur_y == prev_y:
+                    stacked_delay += delay
+                    continue
+            if prev_event:
+                stacked_events.append((prev_event, prev_x, prev_y, stacked_delay))
+            prev_event, prev_x, prev_y, stacked_delay = cur_event, cur_x, cur_y, delay
+        else:
+            if prev_event:
+                stacked_events.append((prev_event, prev_x, prev_y, stacked_delay))
+            stacked_events.append(events[i])
+            prev_event, prev_x, prev_y, stacked_delay = empty_field
     if stacked_events[-1] == empty_field:
         stacked_events.pop()
     return stacked_events
@@ -144,7 +175,7 @@ def insert_hot_corner_activate(events: List[AnyEvent]):
     """
     is_active = False
     result = []
-    n, debt = len(events), 0.0
+    debt = 0.0
 
     for event in events:
         action = event[0]
@@ -187,38 +218,11 @@ def post_process_input_events(events: List[AnyEvent]) -> List[AnyEvent]:
     """
     return insert_hot_corner_activate(
         cleanup_unpaired_events(
-            stack_time_keyboard(
-                convert_time_to_delays(events)
+            stack_time_mouse(
+                stack_time_keyboard(
+                    convert_time_to_delays(events)
+                )
             )
+
         )
     )
-
-
-if __name__ == '__main__':
-
-    # from src.file_io.file_io import read_macro
-    #
-    # filename = "zalupa"
-    # compare = "2024-08-16_14-23-11_683"
-    #
-    # def get_macro(_file_name: str):
-    #     macro_path = (f"/home/blxnk/PycharmProjects/click_key_capture/"
-    #                   f"macros/{_file_name}.txt")
-    #     return read_macro(macro_path)
-    #
-    # target_macro = get_macro(filename)
-    # compare_macro = get_macro(compare)
-    #
-    # target_macro = insert_hot_corner_activate(target_macro)
-
-    # for t, c in zip(target_macro, compare_macro):
-    #     print(t == c, t, c)
-
-    events = [
-        ("move", 0, 0, 0.01),
-        ("click", "left", 0.01),
-        ("move", 0, 0, 0.02),
-        ("move", 0, 0, 0.03)
-    ]
-
-    pprint.pprint(insert_hot_corner_activate(events))
