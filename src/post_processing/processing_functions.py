@@ -1,4 +1,3 @@
-import pprint
 from typing import List
 from src.event_handlers.events import AnyEvent
 
@@ -42,13 +41,13 @@ def remove_unpaired_up_events(events: List[AnyEvent]):
                 cleaned_events.append(event)
                 pressed.remove(button)
         else:
-            button = event[3]
-            _key = "click" + button
-            if _type == "click_down":
-                cleaned_events.append(event)
-                pressed.add(_key)
-            else:
-                if _key in pressed:
+            if len(event) >= 4 and isinstance(event[3], (str, int)):
+                button = event[3]
+                _key = "click" + str(button)
+                if _type == "click_down":
+                    cleaned_events.append(event)
+                    pressed.add(_key)
+                elif _key in pressed:
                     cleaned_events.append(event)
                     pressed.remove(_key)
 
@@ -61,29 +60,31 @@ def remove_unpaired_down_events(events: List[AnyEvent]):
     unpressed = set()
 
     for i in range(len(events) - 1, -1, -1):
+        event = events[i]
         _type = events[i][0]
         if _type in untracked:
-            cleaned_events.append(events[i])
+            cleaned_events.append(event)
             continue
 
         if _type.startswith("key"):
-            button = events[i][1]
+            button = event[1]
             if _type == "key_release":
-                cleaned_events.append(events[i])
+                cleaned_events.append(event)
                 unpressed.add(button)
             elif _type == "key_press" and button in unpressed:
-                cleaned_events.append(events[i])
+                cleaned_events.append(event)
                 unpressed.remove(button)
         else:
-            button = events[i][3]
-            _key = "click" + button
-            if _type == "click_up":
-                cleaned_events.append(events[i])
-                unpressed.add(_key)
-            else:
-                if _key in unpressed:
-                    cleaned_events.append(events[i])
-                    unpressed.remove(_key)
+            if len(event) >= 4 and isinstance(event[3], (str, int)):
+                button = event[3]
+                _key = "click" + str(button)
+                if _type == "click_up":
+                    cleaned_events.append(event)
+                    unpressed.add(_key)
+                else:
+                    if _key in unpressed:
+                        cleaned_events.append(event)
+                        unpressed.remove(_key)
 
     cleaned_events.reverse()
     return cleaned_events
