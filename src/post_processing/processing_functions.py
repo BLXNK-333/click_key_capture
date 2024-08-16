@@ -89,7 +89,7 @@ def _remove_unpaired_down_events(events: List[AnyEvent]):
     return cleaned_events
 
 
-def _cleanup_unpaired_events(events: List[AnyEvent]):
+def cleanup_unpaired_events(events: List[AnyEvent]):
     """
     Удаляет из трека события нажатий и отпусканий клавиш клавиатуры или кликов мыши,
     которые не имеют пары. Например, если клавиша была нажата, но не отжата до
@@ -100,7 +100,7 @@ def _cleanup_unpaired_events(events: List[AnyEvent]):
     )
 
 
-def _stack_time_keyboard(events: List[AnyEvent]):
+def stack_time_keyboard(events: List[AnyEvent]):
     """
     Складывает время задержек для последовательных нажатий или отпусканий
     одной и той же клавиши.
@@ -136,46 +136,89 @@ def _stack_time_keyboard(events: List[AnyEvent]):
     return stacked_events
 
 
+def insert_hot_corner_activate(events: List[AnyEvent]):
+    """
+    Обрабатывает последовательность событий, добавляя активацию горячего
+    угла при перемещении мыши в координаты (0, 0) и изменяя время задержки
+    следующего события.
+    """
+    is_active = False
+    result = []
+    n, debt = len(events), 0.0
+
+    for event in events:
+        action = event[0]
+
+        if action == "move":
+            x, y = event[1], event[2]
+
+            if not x and not y:
+                if not is_active:
+                    is_active = True
+                    debt = 0.001
+                    result.extend([
+                        event,
+                        ("key_press", "Key.cmd", 0.0005),
+                        ("key_release", "Key.cmd", 0.0005)
+                    ])
+                    continue
+        if debt:
+            *data, delay = event
+            new_delay = round(delay - debt, 10)
+            event = (*data, new_delay)
+            debt = 0.0
+            is_active = False
+
+        result.append(event)
+
+    return result
+
+
 def post_process_input_events(events: List[AnyEvent]) -> List[AnyEvent]:
     """
-    Функция выполняет пост обработку событий записанных с устройств ввода.
-    1. Конвертируем время в задержки.
-    2. Складываем задержки одинаковых соседних событий.
-    3. Удаляем не парные события [нажатия, отжатия].
-    :param events: Записанный макрос.
-    :return: (List[KeyboardEvent]) Обработанный макрос.
-    """
+    Функция выполняет постобработку событий, записанных с устройств ввода.
+    1. Конвертирует время в задержки.
+    2. Складывает задержки одинаковых соседних событий.
+    3. Удаляет не парные события (нажатия и отжатия).
+    4. Добавляет активацию горячего угла при перемещении мыши в координаты (0, 0).
 
-    # return _cleanup_unpaired_events(
-    #     _stack_time_keyboard(convert_time_to_delays(events))
-    # )
-    return convert_time_to_delays(events)
+    :param events: Записанный макрос.
+    :return: Обработанный макрос.
+    """
+    return insert_hot_corner_activate(
+        cleanup_unpaired_events(
+            stack_time_keyboard(
+                convert_time_to_delays(events)
+            )
+        )
+    )
 
 
 if __name__ == '__main__':
-    # _events_ = [('key_release', 'Key.ctrl', 1723564444.5224304),
-    #             ('key_release', 'Key.space', 1723564444.5229015),
-    #             ('key_press', "'z'", 1723564446.9984815),
-    #             ('key_press', "'a'", 1723564447.10984),
-    #             ('key_release', "'z'", 1723564447.136293),
-    #             ('key_release', "'a'", 1723564447.2326026),
-    #             ('key_press', "'l'", 1723564447.3530116),
-    #             ('key_release', "'l'", 1723564447.4889426),
-    #             ('key_press', "'u'", 1723564448.6351593),
-    #             ('key_release', "'u'", 1723564448.7363021),
-    #             ('key_press', "'p'", 1723564449.0572848),
-    #             ('key_release', "'p'", 1723564449.1579237),
-    #             ('key_press', "'a'", 1723564449.2428613),
-    #             ('key_release', "'a'", 1723564449.343996),
-    #             ('key_press', 'Key.ctrl', 1723564450.602112)]
+
+    # from src.file_io.file_io import read_macro
     #
-    # pprint.pprint(post_process_input_events(_events_))
+    # filename = "zalupa"
+    # compare = "2024-08-16_14-23-11_683"
+    #
+    # def get_macro(_file_name: str):
+    #     macro_path = (f"/home/blxnk/PycharmProjects/click_key_capture/"
+    #                   f"macros/{_file_name}.txt")
+    #     return read_macro(macro_path)
+    #
+    # target_macro = get_macro(filename)
+    # compare_macro = get_macro(compare)
+    #
+    # target_macro = insert_hot_corner_activate(target_macro)
 
-    from src.file_io.file_io import read_macro
+    # for t, c in zip(target_macro, compare_macro):
+    #     print(t == c, t, c)
 
-    filename = "2024-08-14_02-47-53_238"
-    macro_path = f"/home/blxnk/PycharmProjects/click_key_capture/macros/{filename}.txt"
-    macro = read_macro(macro_path)
+    events = [
+        ("move", 0, 0, 0.01),
+        ("click", "left", 0.01),
+        ("move", 0, 0, 0.02),
+        ("move", 0, 0, 0.03)
+    ]
 
-    macro = _cleanup_unpaired_events(macro)
-    pprint.pprint(macro)
+    pprint.pprint(insert_hot_corner_activate(events))
