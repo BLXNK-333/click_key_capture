@@ -1,4 +1,5 @@
 import os.path
+import csv
 from typing import List, Union
 
 from src.event_handlers.events import MouseEvent, KeyboardEvent
@@ -15,14 +16,14 @@ def write_macro(
     # Записываем данные в файл с использованием json.dump
     with open(filename, "w") as file:
         for line in data:
-            file.write(f"{','.join(map(str, line))}\n")
+            file.write(f'{",".join([f'"{elem}"' for elem in line])}\n')
 
 
 def read_macro(file_path: str):
     result = []
     with open(file_path, "r") as file:
-        for line in file:
-            line = line.rstrip().split(",")
+        reader = csv.reader(file)
+        for line in reader:
             action, *data = line
 
             if action == "move":
