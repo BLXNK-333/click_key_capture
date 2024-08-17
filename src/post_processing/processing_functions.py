@@ -124,12 +124,14 @@ def stack_time_keyboard(events: List[AnyEvent]):
                 continue
 
             if prev_key:
-                stacked_events.append((prev_event, prev_key, stacked_delay))
+                round_delay = round(stacked_delay, 10)
+                stacked_events.append((prev_event, prev_key, round_delay))
             prev_event, prev_key, stacked_delay = cur_event, cur_key, delay
 
         else:
             if prev_key:
-                stacked_events.append((prev_event, prev_key, stacked_delay))
+                round_delay = round(stacked_delay, 10)
+                stacked_events.append((prev_event, prev_key, round_delay))
             stacked_events.append(events[i])
             prev_event, prev_key, stacked_delay = empty_field
     if stacked_events[-1] == empty_field:
@@ -217,13 +219,14 @@ def post_process_input_events(events: List[AnyEvent]) -> List[AnyEvent]:
     :param events: Записанный макрос.
     :return: Обработанный макрос.
     """
-    return insert_hot_corner_activate(
-        cleanup_unpaired_events(
-            stack_time_mouse(
-                stack_time_keyboard(
-                    convert_time_to_delays(events)
-                )
-            )
-
-        )
-    )
+    # return insert_hot_corner_activate(
+    #     cleanup_unpaired_events(
+    #         stack_time_mouse(
+    #             stack_time_keyboard(
+    #                 convert_time_to_delays(events)
+    #             )
+    #         )
+    #
+    #     )
+    # )
+    return insert_hot_corner_activate(convert_time_to_delays(events))
