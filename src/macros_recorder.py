@@ -10,16 +10,19 @@ from .event_replay.replay import EventReplay
 from .file_io.file_io import read_macro
 
 
-def record_macro() -> None:
+def record_macro(rec_mouse: bool = True, rec_keyboard: bool = True) -> None:
     """
     Функция запускает скрипт, для записи макроса.
 
+    :param rec_mouse: (bool) Указывает, следует ли записывать события мыши.
+    :param rec_keyboard: (bool) Указывает, следует ли записывать события клавиатуры.
     :return: (None)
     """
     config = load_config()
     states = States()
     sounds = Sounds(config=config)
     event_handler = EventHandler(config=config, states=states)
+    event_handler.set_settings(rec_mouse=rec_mouse, rec_keyboard=rec_keyboard)
     post_processor = PostProcessing(config=config)
 
     hot_keys_handler = HotKeysHandler(
@@ -33,7 +36,7 @@ def record_macro() -> None:
     hot_keys_handler.start()
 
 
-def replay_macro(macro_path: str, delay: Optional[int] = None) -> None:
+def play_macro(macro_path: str, delay: Optional[int] = None) -> None:
     """
     Функция запускает скрипт, для воспроизведения макроса.
 

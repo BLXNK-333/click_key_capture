@@ -1,1 +1,1 @@
-from .macros_recorder import replay_macro, record_macro
+from .macros_recorder import play_macro, record_macro

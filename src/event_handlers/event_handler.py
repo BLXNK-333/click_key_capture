@@ -22,6 +22,10 @@ class EventHandler:
         self._mouse_listener = None
         self._keyboard_listener = None
 
+    def set_settings(self, rec_mouse: bool, rec_keyboard: bool):
+        self._mouse_record = rec_mouse
+        self._keyboard_record = rec_keyboard
+
     def _on_move(self, x: int, y: int) -> None:
         current_time = time.time()
         self._event_list.append(("move", x, y, current_time))
