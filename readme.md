@@ -11,7 +11,7 @@ sudo dnf install python3-devel ffmpeg xset
 Также необходимо установить Python-зависимости:
 
 ```bash
-pip install pynput
+pip install pynput coloredlogs
 ```
 
 ## Описание

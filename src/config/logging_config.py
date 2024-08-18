@@ -8,7 +8,7 @@ logging_config = {
         "default": {
             "format": "[%(asctime)s] "
                       "#%(levelname)-8s "
-                      "%(filename)s:%(lineno)d - %(name)s:%(funcName)s - %(message)s"
+                      "%(filename)s:%(lineno)d - %(name)s:%(funcName)s\n - %(message)s\n"
         }
     },
     "handlers": {
