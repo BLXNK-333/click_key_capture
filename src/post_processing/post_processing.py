@@ -1,3 +1,4 @@
+import logging
 import multiprocessing
 
 from ..config.recorder_config import Config
@@ -14,6 +15,7 @@ class PostProcessing:
         работы, чтобы освободить ресурсы.
         :param config: (Config) Объект конфигурации.
         """
+        self._logger = logging.getLogger(__name__)
         self._toggle_recording_key = config.hot_keys.toggle_recording
         self._macros_directory = config.paths.macros_directory
         self._macro_queue = multiprocessing.Queue()
@@ -34,11 +36,14 @@ class PostProcessing:
 
     def __process_tasks(self):
         """Процесс, который обрабатывает задачи из очереди."""
-        while True:
-            task = self._macro_queue.get()
-            if task is None:
-                break
-            self.__process_macro(task)
+        try:
+            while True:
+                task = self._macro_queue.get()
+                if task is None:
+                    break
+                self.__process_macro(task)
+        except KeyboardInterrupt:
+            pass
 
     def __start_post_process(self):
         processor = multiprocessing.Process(target=self.__process_tasks)
@@ -59,4 +64,6 @@ class PostProcessing:
         чтобы освободить ресурсы.
         """
         self._macro_queue.put(None)
-        self._post_processor.join()
+        self._logger.info("Waiting for post-processing task to terminate...")
+        self._post_processor.join()  # Ждем завершения процесса постобработки
+        self._logger.info("Post-processing task has terminated.")

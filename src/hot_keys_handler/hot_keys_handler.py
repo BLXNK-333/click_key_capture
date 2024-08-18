@@ -1,4 +1,3 @@
-import pprint
 import threading
 import time
 from logging import getLogger
@@ -36,7 +35,6 @@ class HotKeysHandler:
         self._recording_thread = None
 
     def _on_start_recording(self):
-        print("_on_start_recording")
         self._recording_thread = threading.Thread(target=self._event_handler.start)
         self._logger.info("Recording from input devices has started.")
         self._sounds.play_start_sound()
@@ -44,16 +42,12 @@ class HotKeysHandler:
         self._recording_thread.start()
 
     def _on_stop_recording(self):
-        print("_on_stop_recording")
         if self._recording:
             self._event_handler.stop()
             if self._recording_thread:
                 self._recording_thread.join()
             self._logger.info("Recording from input devices has stopped.")
-            #
-            # x = self._event_handler.get_last_macro()
-            # pprint.pprint(x.filename)
-            # pprint.pprint(x.event_list)
+
             last_macro = self._event_handler.get_last_macro()
             self._post_processor.put_macro(last_macro)
             self._sounds.play_stop_sound()
@@ -66,7 +60,6 @@ class HotKeysHandler:
             self._on_start_recording()
 
     def _on_quit(self):
-        self._logger.info("Terminating the program...")
         self._sounds.play_exit_sound()
         self._recording = False
         self._running = False  # Сигнал для завершения основного цикла.
@@ -76,16 +69,29 @@ class HotKeysHandler:
         self._states.switch_to_next_layout()
 
     def start(self):
+        hotkey_listener = keyboard.GlobalHotKeys({
+            self._toggle_recording: self._on_toggle_recording,
+            self._exit_the_program: self._on_quit,
+            self._switch_layout: self._on_switch_layout
+        })
+
         try:
-            with keyboard.GlobalHotKeys({
-                self._toggle_recording: self._on_toggle_recording,
-                self._exit_the_program: self._on_quit,
-                self._switch_layout: self._on_switch_layout
-            }) as hotkey_listener:
-                while self._running:  # Добавляем условие завершения
-                    time.sleep(0.1)
+            hotkey_listener.start()
+            while self._running:
+                time.sleep(0.1)
+        except KeyboardInterrupt:
+            self._on_quit()
         finally:
+            # Остановить и дождаться завершения hotkey_listener
+            hotkey_listener.stop()
+            hotkey_listener.join()
+
+            # Завершить запись, если она активна
             if self._recording_thread and self._recording_thread.is_alive():
                 self._recording = False
                 self._recording_thread.join()
+
+            # Дождаться обработки всех макросов
             self._post_processor.wait_macro_processing()
+        self._logger.info("Terminating the program...")
+

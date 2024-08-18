@@ -10,13 +10,14 @@ def write_macro(
         data: List[Union[MouseEvent, KeyboardEvent]],
         path: str,
 ):
-    # Изменяем расширение на .json
+    # Изменяем расширение на .txt
     filename = os.path.join(path, f"{filename}.txt")
 
     # Записываем данные в файл с использованием json.dump
     with open(filename, "w") as file:
         for line in data:
             file.write(f'{",".join([f'"{elem}"' for elem in line])}\n')
+        print(f"File '{filename}' has been saved successfully.\n")
 
 
 def read_macro(file_path: str):
