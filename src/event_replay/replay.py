@@ -8,7 +8,7 @@ from pynput.mouse import Controller as MouseController, Button
 from pynput.keyboard import Controller as KeyboardController, Key
 
 from ..config.recorder_config import Config
-from ..event_handlers.events import AnyEvent
+from ..event_handlers.events import AnyEvent, Action
 
 
 class EventReplay:
@@ -21,12 +21,12 @@ class EventReplay:
 
         # Словарь, сопоставляющий тип события с методом воспроизведения
         self._event_handlers = {
-            "move": self._play_mouse_move,
-            "click_down": self._play_mouse_down,
-            "click_up": self._play_mouse_up,
-            "scroll": self._play_mouse_scroll,
-            "key_press": self._play_key_press,
-            "key_release": self._play_key_release,
+            Action.MOVE: self._play_mouse_move,
+            Action.CLICK_DOWN: self._play_mouse_down,
+            Action.CLICK_UP: self._play_mouse_up,
+            Action.SCROLL: self._play_mouse_scroll,
+            Action.KEY_PRESS: self._play_key_press,
+            Action.KEY_RELEASE: self._play_key_release,
         }
 
         # Добавление горячих клавиш для Ctrl+C и Esc

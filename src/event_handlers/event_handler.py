@@ -4,7 +4,7 @@ import time
 from pynput import mouse, keyboard
 from pynput.keyboard import Key
 
-from .events import Macro
+from .events import Macro, Action
 from ..config.recorder_config import Config
 from ..states.states import States
 from ..states.decode import decode_map
@@ -28,19 +28,19 @@ class EventHandler:
 
     def _on_move(self, x: int, y: int) -> None:
         current_time = time.time()
-        self._event_list.append(("move", x, y, current_time))
+        self._event_list.append((Action.MOVE, x, y, current_time))
 
     def _on_click(self, x: int, y: int, button: str, pressed: str) -> None:
-        action = "click_down" if pressed else "click_up"
+        action = Action.CLICK_DOWN if pressed else Action.CLICK_UP
         button_type = str(button).split('.')[-1]
         current_time = time.time()
         self._event_list.append((action, x, y, button_type, current_time))
 
     def _on_scroll(self, x: int, y: int, dx: int, dy: int) -> None:
         current_time = time.time()
-        self._event_list.append(("scroll", x, y, dx, dy, current_time))
+        self._event_list.append((Action.SCROLL, x, y, dx, dy, current_time))
 
-    def __on_key(self, key, event_type: str) -> None:
+    def __on_key(self, key, event_type: Action) -> None:
         current_time = time.time()
         if isinstance(key, Key):
             key_str = key
@@ -64,12 +64,12 @@ class EventHandler:
         self._event_list.append((event_type, key_str, current_time))
 
     def _on_key_press(self, key) -> None:
-        self.__on_key(key, "key_press")
+        self.__on_key(key, Action.KEY_PRESS)
 
     def _on_key_release(self, key) -> None:
         # if not isinstance(key, Key): # для теста
         #     print()
-        self.__on_key(key, "key_release")
+        self.__on_key(key, Action.KEY_RELEASE)
 
     def start(self):
         self._event_list = []

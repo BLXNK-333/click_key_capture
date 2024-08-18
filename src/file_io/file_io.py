@@ -2,7 +2,7 @@ import os.path
 import csv
 from typing import List, Union
 
-from src.event_handlers.events import MouseEvent, KeyboardEvent
+from ..event_handlers.events import MouseEvent, KeyboardEvent, Action
 
 
 def write_macro(
@@ -26,16 +26,16 @@ def read_macro(file_path: str):
         for line in reader:
             action, *data = line
 
-            if action == "move":
+            if action == Action.MOVE:
                 x, y, delay = data
                 result.append((action, int(x), int(y), float(delay)))
 
-            elif action in {"click_down", "click_up"}:
+            elif action in {Action.CLICK_DOWN, Action.CLICK_UP}:
                 x, y, button, delay = data
                 result.append(
                     (action, int(x), int(y), button, float(delay)))
 
-            elif action == "scroll":
+            elif action == Action.SCROLL:
                 x, y, dx, dy = map(int, data[:4])
                 delay = float(data[4])
                 result.append((action, x, y, dx, dy, delay))

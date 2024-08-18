@@ -1,5 +1,5 @@
 from typing import List, Set
-from src.event_handlers.events import AnyEvent
+from src.event_handlers.events import AnyEvent, Action
 
 
 def convert_time_to_delays(events: List[AnyEvent]):
@@ -23,7 +23,7 @@ def convert_time_to_delays(events: List[AnyEvent]):
 
 def remove_unpaired_up_events(events: List[AnyEvent]):
     cleaned_events = []
-    untracked = {"move", "scroll"}
+    untracked = {Action.MOVE, Action.SCROLL}
     pressed = set()
 
     for event in events:
@@ -34,17 +34,17 @@ def remove_unpaired_up_events(events: List[AnyEvent]):
 
         if _type.startswith("key"):
             button = event[1]
-            if _type == "key_press":
+            if _type == Action.KEY_PRESS:
                 cleaned_events.append(event)
                 pressed.add(button)
-            elif _type == "key_release" and button in pressed:
+            elif _type == Action.KEY_RELEASE and button in pressed:
                 cleaned_events.append(event)
                 pressed.remove(button)
         else:
             if len(event) >= 4 and isinstance(event[3], (str, int)):
                 button = event[3]
                 _key = "click_" + str(button)
-                if _type == "click_down":
+                if _type == Action.CLICK_DOWN:
                     cleaned_events.append(event)
                     pressed.add(_key)
                 elif _key in pressed:
@@ -59,7 +59,7 @@ def remove_unpaired_down_events(events: List[AnyEvent], pressed: Set[str]):
         return events
 
     cleaned_events = []
-    untracked = {"move", "scroll"}
+    untracked = {Action.MOVE, Action.SCROLL}
 
     for event in reversed(events):
         _type = event[0]
@@ -70,7 +70,7 @@ def remove_unpaired_down_events(events: List[AnyEvent], pressed: Set[str]):
 
         if _type.startswith("key"):
             button = event[1]
-            if _type == "key_press" and button in pressed:
+            if _type == Action.KEY_PRESS and button in pressed:
                 pressed.remove(button)
             else:
                 cleaned_events.append(event)
@@ -78,7 +78,7 @@ def remove_unpaired_down_events(events: List[AnyEvent], pressed: Set[str]):
             if len(event) >= 4 and isinstance(event[3], (str, int)):
                 button = event[3]
                 _key = f"click_{button}"
-                if _type == "click_down" and _key in pressed:
+                if _type == Action.CLICK_DOWN and _key in pressed:
                     pressed.remove(_key)
                 else:
                     cleaned_events.append(event)
@@ -108,7 +108,7 @@ def insert_hot_corner_activate(events: List[AnyEvent]):
     for event in events:
         action = event[0]
 
-        if action == "move":
+        if action == Action.MOVE:
             x, y = event[1], event[2]
 
             if not x and not y:
@@ -117,8 +117,8 @@ def insert_hot_corner_activate(events: List[AnyEvent]):
                     debt = 0.001
                     result.extend([
                         event,
-                        ("key_press", "Key.cmd", 0.0005),
-                        ("key_release", "Key.cmd", 0.0005)
+                        (Action.KEY_PRESS, "Key.cmd", 0.0005),
+                        (Action.KEY_RELEASE, "Key.cmd", 0.0005)
                     ])
                     continue
         if debt:
