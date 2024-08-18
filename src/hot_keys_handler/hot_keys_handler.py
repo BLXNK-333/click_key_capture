@@ -69,23 +69,17 @@ class HotKeysHandler:
         self._states.switch_to_next_layout()
 
     def start(self):
-        hotkey_listener = keyboard.GlobalHotKeys({
-            self._toggle_recording: self._on_toggle_recording,
-            self._exit_the_program: self._on_quit,
-            self._switch_layout: self._on_switch_layout
-        })
-
         try:
-            hotkey_listener.start()
-            while self._running:
-                time.sleep(0.1)
+            with keyboard.GlobalHotKeys({
+                self._toggle_recording: self._on_toggle_recording,
+                self._exit_the_program: self._on_quit,
+                self._switch_layout: self._on_switch_layout
+            }) as hotkey_listener:
+                while self._running:
+                    time.sleep(0.1)
         except KeyboardInterrupt:
             self._on_quit()
         finally:
-            # Остановить и дождаться завершения hotkey_listener
-            hotkey_listener.stop()
-            hotkey_listener.join()
-
             # Завершить запись, если она активна
             if self._recording_thread and self._recording_thread.is_alive():
                 self._recording = False
@@ -93,5 +87,5 @@ class HotKeysHandler:
 
             # Дождаться обработки всех макросов
             self._post_processor.wait_macro_processing()
-        self._logger.info("Terminating the program...")
+            self._logger.info("Terminating the program...")
 

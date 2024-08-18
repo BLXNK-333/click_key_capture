@@ -1,3 +1,4 @@
+import logging
 import os.path
 import csv
 from typing import List, Union
@@ -10,6 +11,10 @@ def write_macro(
         data: List[Union[MouseEvent, KeyboardEvent]],
         path: str,
 ):
+    """
+    Эта функция записывает макрос в файл. Вызывается из другого модуля,
+    в отдельном процессе, а логики возврата чего-либо в основной процесс не написано.
+    """
     # Изменяем расширение на .txt
     filename = os.path.join(path, f"{filename}.txt")
 
@@ -22,29 +27,38 @@ def write_macro(
 
 def read_macro(file_path: str):
     result = []
-    with open(file_path, "r") as file:
-        reader = csv.reader(file)
-        for line in reader:
-            action, *data = line
+    # Странно, но logger пришлось объявить здесь, потому что функция
+    # не видит его в глобальной зоне видимости, а класс создавать пока
+    # нет смысла.
+    logger = logging.getLogger(__name__)
+    try:
+        with open(file_path, "r") as file:
+            reader = csv.reader(file)
+            for line_number, line in enumerate(reader, 1):
+                action, *data = line
 
-            if action == Action.MOVE:
-                x, y, delay = data
-                result.append((action, int(x), int(y), float(delay)))
+                if action == Action.MOVE:
+                    x, y, delay = data
+                    result.append((action, int(x), int(y), float(delay)))
 
-            elif action in {Action.CLICK_DOWN, Action.CLICK_UP}:
-                x, y, button, delay = data
-                result.append(
-                    (action, int(x), int(y), button, float(delay)))
+                elif action in {Action.CLICK_DOWN, Action.CLICK_UP}:
+                    x, y, button, delay = data
+                    result.append(
+                        (action, int(x), int(y), button, float(delay)))
 
-            elif action == Action.SCROLL:
-                x, y, dx, dy = map(int, data[:4])
-                delay = float(data[4])
-                result.append((action, x, y, dx, dy, delay))
+                elif action == Action.SCROLL:
+                    x, y, dx, dy = map(int, data[:4])
+                    delay = float(data[4])
+                    result.append((action, x, y, dx, dy, delay))
 
-            else:
-                # Предполагается, что сюда попадут оставшиеся
-                # {"key_press", "key_release"}
-                button, delay = data
-                result.append((action, button, float(delay)))
+                else:
+                    # Предполагается, что сюда попадут оставшиеся
+                    # {"key_press", "key_release"}
+                    button, delay = data
+                    result.append((action, button, float(delay)))
 
-    return result
+            return result
+
+    except ValueError as e:
+        logger.error(f"Error reading file on line {line_number}: {e}")
+        return None
