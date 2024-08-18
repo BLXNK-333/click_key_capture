@@ -1,6 +1,10 @@
-help_message = """Рекордер для записи и воспроизведения событий мыши и клавиатуры.
+from enum import StrEnum
 
-Usage: run.sh [-h] [-r [-k] [-m]] [-p [DELAY] [MACRO]]
+
+usage_message = "Usage: run.sh [-h] [-r [-k] [-m]] [-p [-d seconds] [MACRO]]"
+help_message = f"""Рекордер для записи и воспроизведения событий мыши и клавиатуры.
+
+{usage_message}
 
 Options:
   -r, --record [-k] [-m]       Запустить запись. Если -k и -m не переданы, 
@@ -20,7 +24,7 @@ Options:
 Examples:
   ./run.sh -r                  Запустить запись клавиатуры и мыши.
   ./run.sh -rm                 Запустить запись только мыши.
-  ./run.sh -p 5 macro.txt      Воспроизвести макрос 'macro.txt' с задержкой 5 
+  ./run.sh -pd 5 macro.txt     Воспроизвести макрос 'macro.txt' с задержкой 5 
                                секунд. Если задержка не указана, используется
                                значение по умолчанию из настроек.
   ./run.sh -p                  Вывести список записанных макросов и предложить 
@@ -36,3 +40,8 @@ Examples:
 
 Программа нестабильна и рекомендуется только для тестирования и небольших задач.
 """
+
+
+class Help(StrEnum):
+    USAGE_MSG = usage_message
+    HELP_MSG = help_message
