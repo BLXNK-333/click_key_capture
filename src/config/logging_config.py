@@ -6,9 +6,9 @@ logging_config = {
     "disable_existing_loggers": True,
     "formatters": {
         "default": {
-            "format": "[%(asctime)s] "
+            "format": "\n[%(asctime)s] "
                       "#%(levelname)-8s "
-                      "%(filename)s:%(lineno)d - %(name)s:%(funcName)s\n - %(message)s\n"
+                      "%(filename)s:%(lineno)d - %(name)s:%(funcName)s\n - %(message)s"
         }
     },
     "handlers": {
@@ -29,6 +29,6 @@ logging_config = {
     "root": {
         "level": "DEBUG",
         "formatter": "default",
-        "handlers": ["stdout", "stderr"]
+        "handlers": ["stdout"]
     }
 }
