@@ -1,20 +1,32 @@
 # TODO
 #  1. Дописать main.py
-#  2. Удалить принты, добавить логирование вместо них, если надо.
+#  2. Удалить принты, кроме тех, что типа за view. добавить логирование вместо них,
+#   если надо.
 #  3. Удалить закомментированные ненужные участки кода.
-#  4. Переписать test_remove_unpaired_up_events.py, прошлая логика не актуальна.
+#  4. Переписать логику insert_hot_corner_activate. Нужно обработать такой случай,
+#   когда в углу (0, 0) могут кликать мышью. Это ломает смысл функции.
 
 import logging.config
 import argparse
 import sys
 import coloredlogs
+
 from src.config.logging_config import logging_config
-from src import record_macro, play_macro, help_message
+from src import (
+    load_config,
+    record_macro,
+    play_macro,
+    Help,
+    interactive_selection
+)
 
 
 class CustomArgumentParser(argparse.ArgumentParser):
     def print_help(self, file=None):
-        print(help_message)
+        print(Help.HELP_MSG)
+
+    def format_usage(self):
+        return Help.USAGE_MSG
 
 
 def parse_args():
@@ -25,7 +37,8 @@ def parse_args():
     parser.add_argument('-r', '--record', action='store_true')
     parser.add_argument('-k', '--keyboard', action='store_true')
     parser.add_argument('-m', '--mouse', action='store_true')
-    parser.add_argument('-p', '--play', nargs='?', const=True, metavar='DELAY')
+    parser.add_argument('-p', '--play', action='store_true')
+    parser.add_argument('-d', '--delay', type=int, default=None)
     parser.add_argument('macro', nargs='?', default=None)
     parser.add_argument('-h', '--help', action='store_true')
 
@@ -34,25 +47,38 @@ def parse_args():
 
 def main():
     logging.config.dictConfig(logging_config)
-    coloredlogs.install(level='DEBUG', fmt=logging_config['formatters']['default']['format'])
+    coloredlogs.install(
+        level='DEBUG', fmt=logging_config['formatters']['default']['format'])
 
     args = parse_args()
+    app_config = load_config()
 
     if args.help:
-        print(help_message)
+        print(Help.HELP_MSG)
         sys.exit(0)
 
-    if args.record:
-        rec_mouse = args.mouse or not args.keyboard
-        rec_keyboard = args.keyboard or not args.mouse
-        record_macro(rec_mouse=rec_mouse, rec_keyboard=rec_keyboard)
-    elif args.play:
-        delay = args.play if isinstance(args.play, int) else None
-        macro_path = args.macro
-        play_macro(macro_path, delay)
-    else:
-        print("Ошибка: Необходимо указать либо -r для записи, либо -p для воспроизведения.")
-        sys.exit(1)
+    try:
+        if args.record:
+            rec_mouse = args.mouse or not args.keyboard
+            rec_keyboard = args.keyboard or not args.mouse
+            record_macro(
+                config=app_config, rec_mouse=rec_mouse, rec_keyboard=rec_keyboard)
+        elif args.play:
+            delay = args.delay
+            macro_path = args.macro  # Если макрос не указан, он будет None
+            if macro_path is None:
+                macro_path = interactive_selection(
+                    app_config.paths.macros_directory, ".txt"
+                )
+            if macro_path:
+                play_macro(config=app_config, macro_path=macro_path, delay=delay)
+        else:
+            logging.error("You must specify a flag first, either -r for "
+                          "recording or -p for playback.")
+            sys.exit(1)
+    except KeyboardInterrupt:
+        logging.info("Program interrupted by user. Exiting...")
+        sys.exit(0)
 
 
 if __name__ == '__main__':
