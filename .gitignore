@@ -1,9 +1,8 @@
 __pycache__/
 .venv/
 .idea/
-sounds/
-macros/
+/macros/*
+!/macros/.gitignore
 pyrightconfig.json
 .flake8
 .env
-test.py
