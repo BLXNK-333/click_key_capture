@@ -29,10 +29,9 @@ class EventReplay:
             Action.KEY_RELEASE: self._play_key_release,
         }
 
-        # Добавление горячих клавиш для Ctrl+C и Esc
+        # Добавление горячих клавиш для Ctrl+C
         self._hotkey_listener = keyboard.GlobalHotKeys({
-            '<ctrl>+c': self._stop_and_exit,
-            '<esc>': self._stop_and_exit
+            '<ctrl>+c': self._stop_and_exit
         })
 
     def set_replay_delay(self, delay: int):
