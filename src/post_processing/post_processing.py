@@ -13,6 +13,7 @@ class PostProcessing:
         В конструкторе класса запускается отдельный процесс, для постобработки.
         Требует обязательного вызова, метода wait_macro_processing в конце
         работы, чтобы освободить ресурсы.
+
         :param config: (Config) Объект конфигурации.
         """
         self._logger = logging.getLogger(__name__)
@@ -50,18 +51,22 @@ class PostProcessing:
         processor.start()
         return processor
 
-    def put_macro(self, macro: Macro):
+    def put_macro(self, macro: Macro) -> None:
         """
         Функция, для постобработки записанного макроса.
+
         :param macro: (Macro) Макрос, который нужно обработать.
+        :return: (None)
         """
         self._macro_queue.put(macro)
 
-    def wait_macro_processing(self):
+    def wait_macro_processing(self) -> None:
         """
         Функция посылает сигнал завершения процессу постобработки,
         и ждет его завершения. Нужно обязательно вызвать в конце программы,
         чтобы освободить ресурсы.
+
+        :return: (None)
         """
         self._macro_queue.put(None)
         self._logger.info("Waiting for post-processing task to terminate...")

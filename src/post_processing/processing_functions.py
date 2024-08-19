@@ -179,14 +179,3 @@ def post_process_input_events(events: List[AnyEvent]) -> List[AnyEvent]:
                 convert_time_to_delays(events)
                 )
             )
-
-
-if __name__ == '__main__':
-    events = [
-        (Action.MOVE, 0, 0, 0.1),
-        (Action.MOVE, 0, 0, 0.1),
-        (Action.KEY_PRESS, "Key.esc", 0.1),
-        (Action.CLICK_UP, 50, 50, 0.1)
-    ]
-
-    pprint.pprint(get_hot_corner_insert_indices(events))

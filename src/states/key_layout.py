@@ -29,7 +29,7 @@ def execute_gsettings_command(schema: str, key: str) -> str:
         return output
 
     except subprocess.CalledProcessError as e:
-        logger.error(f"Ошибка выполнения команды gsettings: {e}")
+        logger.error(f"Error executing gsettings command: {e}")
         raise  # Повторное возбуждение исключения для обработки его выше по цепочке
 
 
@@ -55,7 +55,7 @@ def get_keyboard_layouts() -> List[str]:
             raise ValueError
 
     except Exception as e:
-        logger.error(f"Произошла ошибка при получении раскладок клавиатуры: {e}", exc_info=True)
+        logger.error(f"An error occurred while retrieving keyboard layouts: {e}", exc_info=True)
         raise
 
 

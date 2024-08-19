@@ -19,6 +19,21 @@ class HotKeysHandler:
             post_processor: PostProcessing,
             states: States
     ):
+        """
+        Класс представляет собой обработчик горячих клавиш (подобие контроллера),
+        в приложении. Таких, как:
+
+        - Активация / Остановка записи
+        - Выход из программы
+        - Изменение языковой раскладки.
+
+        :param config: (Config) DataClass с настройками.
+        :param sounds: (Sounds) Класс, который воспроизводит звуки.
+        :param event_handler: (EventHandler) Обработчик событий с устройств ввода.
+        :param post_processor: (PostProcessing) Пост обработчик макроса.
+        :param states: (States) Класс с состояниями.
+        """
+
         self._logger = getLogger(__name__)
         self._config = config
         self._sounds = sounds
@@ -68,7 +83,12 @@ class HotKeysHandler:
     def _on_switch_layout(self):
         self._states.switch_to_next_layout()
 
-    def start(self):
+    def start(self) -> None:
+        """
+        Функция запускает обработчик, и начинает слушать hot keys.
+
+        :return: (None)
+        """
         try:
             with keyboard.GlobalHotKeys({
                 self._toggle_recording: self._on_toggle_recording,

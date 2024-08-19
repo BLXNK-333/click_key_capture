@@ -8,6 +8,7 @@ class Sounds:
     def __init__(self, config: Config):
         """
         Воспроизводит звуки, в отдельном процессе, не блокируя основной поток.
+
         :param config: (Config) Принимает аргумент, класс конфигурации.
         """
         self._start_sound = config.paths.start_sound
@@ -26,11 +27,26 @@ class Sounds:
         sound_thread.start()
         return sound_thread
 
-    def play_start_sound(self):
+    def play_start_sound(self) -> None:
+        """
+        Воспроизводит звук начала записи.
+
+        :return: (None)
+        """
         self._playsound(self._start_sound)
 
-    def play_stop_sound(self):
+    def play_stop_sound(self) -> None:
+        """
+        Воспроизводит звук останова записи.
+
+        :return: (None)
+        """
         self._playsound(self._stop_sound)
 
-    def play_exit_sound(self):
+    def play_exit_sound(self) -> None:
+        """
+        Воспроизводит звук выхода из программы.
+
+        :return: (None)
+        """
         self._playsound(self._exit_sound)

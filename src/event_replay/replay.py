@@ -13,6 +13,12 @@ from ..event_handlers.events import AnyEvent, Action
 
 class EventReplay:
     def __init__(self, config: Config):
+        """
+        Класс представляет собой проигрыватель макросов. Иногда возникают
+        ошибки при "воспроизведении" кириллицы.
+
+        :param config: (Config) DataClass с настройками.
+        """
         self._logger = logging.getLogger(__name__)
         self._replay_delay = config.settings.delay_before_playback
         self._mouse_controller = MouseController()
@@ -34,7 +40,14 @@ class EventReplay:
             '<ctrl>+c': self._stop_and_exit
         })
 
-    def set_replay_delay(self, delay: int):
+    def set_replay_delay(self, delay: int) -> None:
+        """
+        Можно изменить настройки после задержки перед воспроизведением
+        макроса после инициализации класса.
+
+        :param delay: (int) Задержка перед воспроизведением.
+        :return: (None)
+        """
         self._replay_delay = delay
 
     def _stop_and_exit(self):
@@ -86,7 +99,13 @@ class EventReplay:
             key = getattr(Key, key.split('.')[1])
         self._keyboard_controller.release(key)
 
-    def play_events(self, event_list: List[AnyEvent]):
+    def play_events(self, event_list: List[AnyEvent]) -> None:
+        """
+        Воспроизводит события с устройств ввода.
+
+        :param event_list: Список с событиями с устройств ввода.
+        :return: (None)
+        """
         if not event_list:
             self._logger.info("No events to play.")
             return

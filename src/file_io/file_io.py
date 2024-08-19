@@ -1,9 +1,9 @@
 import logging
 import os.path
 import csv
-from typing import List, Union
+from typing import List, Union, Optional
 
-from ..event_handlers.events import MouseEvent, KeyboardEvent, Action
+from ..event_handlers.events import MouseEvent, KeyboardEvent, AnyEvent, Action
 
 
 def write_macro(
@@ -12,8 +12,8 @@ def write_macro(
         path: str,
 ):
     """
-    Эта функция записывает макрос в файл. Вызывается из другого модуля,
-    в отдельном процессе, а логики возврата чего-либо в основной процесс не написано.
+    Эта функция записывает макрос в файл. Вызывается в отдельном процессе,
+    а логики возврата чего-либо в основной процесс не написано.
     """
     # Изменяем расширение на .txt
     filename = os.path.join(path, f"{filename}.txt")
@@ -25,7 +25,15 @@ def write_macro(
         print(f"\nFile '{filename}' has been saved successfully.\n")
 
 
-def read_macro(file_path: str):
+def read_macro(file_path: str) -> Optional[List[AnyEvent]]:
+    """
+    Функция читает файл txt с записанным макросом и переводит его
+    в список с tuples, где tuple это какое-либо событие с устройств ввода.
+    Если файл прочитать не удалось, тогда возвращает None.
+
+    :param file_path: (str) Путь до файла.
+    :return: Optional[List[AnyEvent]] Список с событиями или ничего.
+    """
     result = []
     # Странно, но logger пришлось объявить здесь, потому что функция
     # не видит его в глобальной зоне видимости, а класс создавать пока

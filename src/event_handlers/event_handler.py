@@ -12,6 +12,14 @@ from ..states.decode import decode_map
 
 class EventHandler:
     def __init__(self, config: Config, states: States):
+        """
+        Класс представляет логику обработки, а конкретнее записи событий
+        приходящих с устройств ввода, такие как клики мыши, скролл, движения,
+        нажатия клавиш клавиатуры.
+
+        :param config: (Config) Dataclass с настройками.
+        :param states: (States) Класс с состояниями.
+        """
         self._event_list = []
         self._current_marco_name: str = ""
         self._delay = config.settings.delay
@@ -23,6 +31,12 @@ class EventHandler:
         self._keyboard_listener = None
 
     def set_settings(self, rec_mouse: bool, rec_keyboard: bool):
+        """
+        Можно изменить настройки записи событий после инициализации.
+        :param rec_mouse: (bool) Указывает, записывать мышь или нет.
+        :param rec_keyboard: (bool) Указывает, записывать клавиатуру или нет.
+        :return:
+        """
         self._mouse_record = rec_mouse
         self._keyboard_record = rec_keyboard
 
@@ -71,7 +85,11 @@ class EventHandler:
         #     print()
         self.__on_key(key, Action.KEY_RELEASE)
 
-    def start(self):
+    def start(self) -> None:
+        """
+        Запускает обработчики событий мыши и клавиатуры.
+        :return: (None)
+        """
         self._event_list = []
         self._current_marco_name = datetime.now().strftime("%Y-%m-%d_%H-%M-%S_%f")[:-3]
 
@@ -90,13 +108,15 @@ class EventHandler:
             )
             self._keyboard_listener.start()
 
-    def stop(self):
+    def stop(self) -> None:
+        """
+        Останавливает обработчики событий мыши и клавиатуры.
+        :return: (None)
+        """
         if self._mouse_listener:
-            # time.sleep(0.15)
             self._mouse_listener.stop()
 
         if self._keyboard_listener:
-            # time.sleep(0.15)
             self._keyboard_listener.stop()
         time.sleep(0.15)
 
