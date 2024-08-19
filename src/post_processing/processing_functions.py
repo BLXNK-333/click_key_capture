@@ -1,3 +1,4 @@
+import pprint
 from typing import List, Set
 from src.event_handlers.events import AnyEvent, Action
 
@@ -95,41 +96,68 @@ def cleanup_unpaired_events(events: List[AnyEvent]):
     return remove_unpaired_down_events(*remove_unpaired_up_events(events))
 
 
+def _get_rightmost_hot_corner_event_index(events):
+    for i in range(len(events) - 1, -1, -1):
+        event = events[i][0]
+        if event == Action.CLICK_UP:
+            return i
+    return 0
+
+
+def get_hot_corner_insert_indices(events):
+    i, n = 0, len(events)
+    click_down = False
+    click_after_indices = []
+    candidate = -1
+    rightmost_hot_event_index = _get_rightmost_hot_corner_event_index(events)
+
+    for i in range(n):
+        event = events[i]
+        action = event[0]
+
+        if action == Action.MOVE:
+            x, y = event[1], event[2]
+            if not x and not y:
+                if candidate < 0:
+                    candidate = i
+                continue
+            if not click_down or candidate > rightmost_hot_event_index:
+                click_after_indices.append(candidate)
+            click_down = False
+            candidate = -1
+
+        elif action == Action.CLICK_DOWN:
+            click_down = True
+        elif action == Action.KEY_PRESS:
+            if event[1] == "Key.esc":
+                click_down = False
+                candidate = -1
+
+    if -1 < candidate < rightmost_hot_event_index:
+        click_after_indices.append(candidate)
+
+    return click_after_indices
+
+
 def insert_hot_corner_activate(events: List[AnyEvent]):
     """
     Обрабатывает последовательность событий, добавляя активацию горячего
     угла при перемещении мыши в координаты (0, 0) и изменяя время задержки
     следующего события.
     """
-    is_active = False
+    indices = set(get_hot_corner_insert_indices(events))
+    if not indices:
+        return events
     result = []
-    debt = 0.0
+    indices = set(indices)
 
-    for event in events:
-        action = event[0]
-
-        if action == Action.MOVE:
-            x, y = event[1], event[2]
-
-            if not x and not y:
-                if not is_active:
-                    is_active = True
-                    debt = 0.001
-                    result.extend([
-                        event,
-                        (Action.KEY_PRESS, "Key.cmd", 0.0005),
-                        (Action.KEY_RELEASE, "Key.cmd", 0.0005)
-                    ])
-                    continue
-        if debt:
-            *data, delay = event
-            new_delay = round(delay - debt, 10)
-            event = (*data, new_delay)
-            debt = 0.0
-            is_active = False
-
+    for i, event in enumerate(events):
         result.append(event)
-
+        if i in indices:
+            result.extend([
+                (Action.KEY_PRESS, "Key.cmd", 0.0),
+                (Action.KEY_RELEASE, "Key.cmd", 0.0)
+                ])
     return result
 
 
@@ -149,3 +177,14 @@ def post_process_input_events(events: List[AnyEvent]) -> List[AnyEvent]:
                 convert_time_to_delays(events)
                 )
             )
+
+
+if __name__ == '__main__':
+    events = [
+        (Action.MOVE, 0, 0, 0.1),
+        (Action.MOVE, 0, 0, 0.1),
+        (Action.KEY_PRESS, "Key.esc", 0.1),
+        (Action.CLICK_UP, 50, 50, 0.1)
+    ]
+
+    pprint.pprint(get_hot_corner_insert_indices(events))

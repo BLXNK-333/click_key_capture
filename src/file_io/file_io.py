@@ -22,7 +22,7 @@ def write_macro(
     with open(filename, "w") as file:
         for line in data:
             file.write(f'{",".join([f'"{elem}"' for elem in line])}\n')
-        print(f"File '{filename}' has been saved successfully.\n")
+        print(f"\nFile '{filename}' has been saved successfully.\n")
 
 
 def read_macro(file_path: str):
