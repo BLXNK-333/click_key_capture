@@ -24,9 +24,11 @@ def interactive_selection(directory: str, ext: str):
         print(f"There are no recorded macros in the directory {directory}")
         return None
 
-    choice = int(input("\nEnter the macro number to play: "))
-    if choice in files:
-        return files[choice]
+    choice = input("\nEnter the macro number to play: ")
+    if choice.isdigit():
+        choice = int(choice)
+        if choice in files:
+            return files[choice]
     else:
         print("This key is not in the list")
         return None

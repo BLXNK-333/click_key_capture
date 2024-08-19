@@ -58,7 +58,7 @@ def play_macro(
 
     if macro:
         replayer = EventReplay(config)
-        if delay:
+        if delay is not None:
             replayer.set_replay_delay(delay)
 
         replayer.play_events(macro)
