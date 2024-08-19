@@ -130,6 +130,8 @@ def get_hot_corner_insert_indices(events):
             click_down = True
         elif action == Action.KEY_PRESS:
             if event[1] == "Key.esc":
+                if candidate > -1:
+                    click_after_indices.append(candidate)
                 click_down = False
                 candidate = -1
 

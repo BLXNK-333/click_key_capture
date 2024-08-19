@@ -67,7 +67,7 @@ class TestGetHotCornerInsertIndices(unittest.TestCase):
             (Action.KEY_PRESS, "Key.esc", 0.1),
             (Action.CLICK_UP, 50, 50, 0.1)
         ]
-        expected = []
+        expected = [0]
         result = get_hot_corner_insert_indices(events)
         self.assertEqual(result, expected)
 
