@@ -16,6 +16,9 @@ def write_macro(
     а логики возврата чего-либо в основной процесс не написано.
     """
     # Изменяем расширение на .txt
+    if not os.path.exists(path):
+        os.makedirs(path)
+
     filename = os.path.join(path, f"{filename}.txt")
 
     # Записываем данные в файл с использованием json.dump
