@@ -53,6 +53,8 @@ pip install pynput coloredlogs
 - `<Ctrl>+<Space>` : начать/остановить запись
 - `<Ctrl>+<C>` : выйти из программы
 
+![recording_mode](./screenshots/macro_recording_mode.png)
+
 Опции для запуска:
 
 - `-r` : запись (--record)
@@ -73,6 +75,8 @@ pip install pynput coloredlogs
 Во время воспроизведения доступно следующее управление:
 
 - `<Ctrl>+<C>` : принудительно остановить воспроизведение и выйти
+
+![playback_mode](./screenshots/macro_playback_mode.png)
 
 Опции для запуска:
 
