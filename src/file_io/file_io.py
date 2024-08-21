@@ -1,14 +1,14 @@
 import logging
 import os.path
 import csv
-from typing import List, Union, Optional
+from typing import List, Optional
 
-from ..event_handlers.events import MouseEvent, KeyboardEvent, AnyEvent, Action
+from ..event_handlers.events import AnyEvent, Action
 
 
 def write_macro(
         filename: str,
-        data: List[Union[MouseEvent, KeyboardEvent]],
+        data: List[AnyEvent],
         path: str,
 ):
     """

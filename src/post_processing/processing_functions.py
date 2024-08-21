@@ -1,4 +1,3 @@
-import pprint
 from typing import List, Set
 from src.event_handlers.events import AnyEvent, Action
 
@@ -163,7 +162,10 @@ def insert_hot_corner_activate(events: List[AnyEvent]):
     return result
 
 
-def post_process_input_events(events: List[AnyEvent]) -> List[AnyEvent]:
+def post_process_input_events(
+    events: List[AnyEvent],
+    hot_corner: bool = True
+) -> List[AnyEvent]:
     """
     Функция выполняет постобработку событий, записанных с устройств ввода.
     1. Конвертирует время в задержки.
@@ -171,11 +173,12 @@ def post_process_input_events(events: List[AnyEvent]) -> List[AnyEvent]:
     3. Удаляет не парные события (нажатия и отжатия).
     4. Добавляет активацию горячего угла при перемещении мыши в координаты (0, 0).
 
+    :param hot_corner: (bool) Если True, добавляет обработку "горячего угла".
     :param events: Записанный макрос.
     :return: Обработанный макрос.
     """
-    return insert_hot_corner_activate(
-        cleanup_unpaired_events(
-                convert_time_to_delays(events)
-                )
-            )
+
+    cleanup = cleanup_unpaired_events(convert_time_to_delays(events))
+    if hot_corner:
+        cleanup = insert_hot_corner_activate(cleanup)
+    return cleanup

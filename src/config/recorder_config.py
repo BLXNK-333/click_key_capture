@@ -23,6 +23,7 @@ class Settings:
     mouse_record: True
     keyboard_record: True
     delay_before_playback: int
+    gnome_hot_corner: True
 
 
 @dataclass
@@ -49,6 +50,7 @@ def load_config():
             mouse_record=recorder_settings["settings"]["mouse_record"],
             keyboard_record=recorder_settings["settings"]["keyboard_record"],
             delay=recorder_settings["settings"]["delay"],
-            delay_before_playback=recorder_settings["settings"]["delay_before_playback"]
+            delay_before_playback=recorder_settings["settings"]["delay_before_playback"],
+            gnome_hot_corner=recorder_settings["settings"]["gnome_hot_corner"]
         )
     )

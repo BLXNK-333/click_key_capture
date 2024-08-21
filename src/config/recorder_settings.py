@@ -29,6 +29,9 @@ recorder_settings = {
         "mouse_record": True,
         "keyboard_record": True,
         # Задержка перед, воспроизведением макроса, в секундах.
-        "delay_before_playback": 3
+        "delay_before_playback": 3,
+        # Опция указывает на то, нужно ли добавлять обработку горячего угла,
+        # в процессе постобработки.
+        "gnome_hot_corner": True
     }
 }

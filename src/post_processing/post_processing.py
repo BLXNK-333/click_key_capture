@@ -17,8 +17,8 @@ class PostProcessing:
         :param config: (Config) Объект конфигурации.
         """
         self._logger = logging.getLogger(__name__)
-        self._toggle_recording_key = config.hot_keys.toggle_recording
         self._macros_directory = config.paths.macros_directory
+        self._gnome_hot_corner = config.settings.gnome_hot_corner
         self._macro_queue = multiprocessing.Queue()
         self._post_processor = self.__start_post_process()
 
@@ -27,7 +27,10 @@ class PostProcessing:
         Функция обрабатывает макрос, в соответствии с настройками из
         конфигурации.
         """
-        _post_event_list = post_process_input_events(macro.event_list)
+        _post_event_list = post_process_input_events(
+            events=macro.event_list, hot_corner=self._gnome_hot_corner
+        )
+
         if _post_event_list:
             write_macro(
                 filename=macro.filename,
